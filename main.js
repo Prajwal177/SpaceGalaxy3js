@@ -1,8 +1,18 @@
 import './style.css';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Lensflare } from 'three/examples/jsm/objects/Lensflare';
 import * as THREE from 'three';
 import gsap from 'gsap';
 // import { skybox } from './skybox.js';
+
+//importing assets
+import spacefront from './static/skybox/front.png';
+import spaceback from './static/skybox/back.png';
+import spaceleft from './static/skybox/left.png';
+import spaceright from './static/skybox/right.png';
+import spacetop from './static/skybox/top.png';
+import spacebottom from './static/skybox/bottom.png';
+import planetearth from './static/planetearth.png';
 
 //SCENE AND CAMERA 
 const scene = new THREE.Scene();
@@ -27,24 +37,25 @@ controls.autoRotate = true;
 controls.autoRotateSpeed = 1;
 
 //LIGHTS
-const pointLight = new THREE.PointLight(0xffffff,1,100);
-pointLight.position.set(0,10,10);
-scene.add(pointLight);
+const pointLight = new THREE.PointLight(0xfef6ce,1,100);
+const ambientLight = new THREE.AmbientLight(0xfef6ce,0.06);
+pointLight.position.set(10,3,0);
+scene.add(pointLight,ambientLight);
 
 //SKYBOX
-function skyboxPathStrings() {
-  const basePath = './static/skybox/';
-  const fileType = '.png';
-  const sides = ['front', 'back', 'top', 'bottom', 'left', 'right'];
-  const pathStings = sides.map(side => {
-      return basePath + side + fileType;
-  });
+// function skyboxPathStrings() {
+//   const basePath = './static/skybox/';
+//   const fileType = '.png';
+//   const sides = ['front', 'back', 'top', 'bottom', 'left', 'right'];
+//   const pathStings = sides.map(side => {
+//       return basePath + side + fileType;
+//   });
   
-  return pathStings;
-}
+//   return pathStings;
+// }
 
 function createMaterialArray() {
-const skyboxImagepaths = skyboxPathStrings();
+const skyboxImagepaths = [spacefront,spaceback,spacetop,spacebottom,spaceleft,spaceright];
 const materialArray = skyboxImagepaths.map(image => {
   let texture = new THREE.TextureLoader().load(image);
 
@@ -59,7 +70,7 @@ const skybox = new THREE.Mesh(skyboxGeo, materialArray);
 scene.add(skybox);
 
 //EARTH GEOMETRY
-const earthTexture = new THREE.TextureLoader().load('./static/planetearth.png');
+const earthTexture = new THREE.TextureLoader().load(planetearth);
 const earthGeometry = new THREE.SphereGeometry(3,64,64);
 const earthMaterial = new THREE.MeshStandardMaterial({
   color: 0xcacaca,
@@ -69,6 +80,29 @@ const earthMaterial = new THREE.MeshStandardMaterial({
 });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
+
+//SUN LIGHT FLARE
+// const sunPointLight = new THREE.PointLight(0xfef6ce,1);
+// sunPointLight.position.set(4900,10,0);
+// scene.add(sunPointLight);
+// const textureLoader = new THREE.TextureLoader();
+// const textureFlare0 = textureLoader.load( "./static/lensflare/sunflare.jpg" );
+// const lensflare = new Lensflare();
+// lensflare.addElement( new LensflareElement( textureFlare0, 512, 0 ) );
+// lensflare.addElement( new LensflareElement( textureFlare1, 512, 0 ) );
+// lensflare.addElement( new LensflareElement( textureFlare2, 60, 0.6 ) );
+// sunPointLight.add(lensflare);
+
+// //SUN GEOMETRY
+// const sunGeometry = new THREE.SphereGeometry(100,64,64);
+// const sunMaterial = new THREE.MeshStandardMaterial({
+//   color: 0xf60404,
+//   emissive: 0xfe990b,
+//   fog: true,
+// });
+// const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+// sun.position.set(5000,10,0);
+// scene.add(sun);
 
 //RESIZING CANVAS WITH WINDOW
 let sizeWidth, sizeHeight;
@@ -115,6 +149,8 @@ t1.fromTo(".title", {opacity: 0},{opacity:1});
 //ANIMATION LOOP
 function animate() {
   window.requestAnimationFrame(animate);
+
+  earth.rotation.y += 0.001;
 
   controls.update();
   renderer.render(scene, camera);
