@@ -1,6 +1,7 @@
 import './style.css';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { Lensflare } from 'three/examples/jsm/objects/Lensflare';
+import { Lensflare, LensflareElement} from 'three/examples/jsm/objects/Lensflare';
+import { GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import gsap from 'gsap';
 // import { skybox } from './skybox.js';
@@ -13,6 +14,10 @@ import spaceright from './static/skybox/right.png';
 import spacetop from './static/skybox/top.png';
 import spacebottom from './static/skybox/bottom.png';
 import planetearth from './static/planetearth.png';
+import lensflare0 from './static/lensflare/lensflare0.png';
+import lensflare1 from './static/lensflare/lensflare1.png';
+import lensflare2 from './static/lensflare/lensflare2.png';
+import lensflare3 from './static/lensflare/lensflare3.png';
 
 //SCENE AND CAMERA 
 const scene = new THREE.Scene();
@@ -24,6 +29,7 @@ scene.add(camera);
 //RENDERER
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector(".webgl"),
+  alpha: true,
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -82,27 +88,34 @@ const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
 
 //SUN LIGHT FLARE
-// const sunPointLight = new THREE.PointLight(0xfef6ce,1);
-// sunPointLight.position.set(4900,10,0);
-// scene.add(sunPointLight);
-// const textureLoader = new THREE.TextureLoader();
-// const textureFlare0 = textureLoader.load( "./static/lensflare/sunflare.jpg" );
-// const lensflare = new Lensflare();
-// lensflare.addElement( new LensflareElement( textureFlare0, 512, 0 ) );
-// lensflare.addElement( new LensflareElement( textureFlare1, 512, 0 ) );
-// lensflare.addElement( new LensflareElement( textureFlare2, 60, 0.6 ) );
-// sunPointLight.add(lensflare);
+const sunPointLight = new THREE.PointLight(0xfef6ce,1);
+sunPointLight.position.set(970,15,0);
+scene.add(sunPointLight);
+const textureLoader = new THREE.TextureLoader();
 
-// //SUN GEOMETRY
-// const sunGeometry = new THREE.SphereGeometry(100,64,64);
-// const sunMaterial = new THREE.MeshStandardMaterial({
-//   color: 0xf60404,
-//   emissive: 0xfe990b,
-//   fog: true,
-// });
-// const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-// sun.position.set(5000,10,0);
-// scene.add(sun);
+const textureFlare0 = textureLoader.load(lensflare0);
+const textureFlare1 = textureLoader.load( lensflare1 );
+const textureFlare2 = textureLoader.load( lensflare2 );
+const textureFlare3 = textureLoader.load(lensflare3);
+
+const lensflare = new Lensflare();
+
+lensflare.addElement( new LensflareElement( textureFlare0, 500, 0 ) );
+lensflare.addElement( new LensflareElement( textureFlare3, 60, 0.2 ) );
+lensflare.addElement( new LensflareElement( textureFlare3, 70, 0.14 ) );
+lensflare.addElement( new LensflareElement( textureFlare3, 80, 0.06 ) );
+// lensflare.addElement( new LensflareElement( textureFlare3, 70, 0.7 ) );
+
+sunPointLight.add( lensflare );
+
+//SUN GEOMETRY
+const gltfLoader = new GLTFLoader();
+gltfLoader.load( './static/sungltf/scene.gltf', function ( gltf ) {
+  gltf.scene.position.set(1000,10,0);
+  gltf.scene.scale.set(2,2,2);
+	scene.add( gltf.scene );
+
+});
 
 //RESIZING CANVAS WITH WINDOW
 let sizeWidth, sizeHeight;
