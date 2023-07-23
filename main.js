@@ -109,13 +109,16 @@ lensflare.addElement( new LensflareElement( textureFlare3, 80, 0.06 ) );
 sunPointLight.add( lensflare );
 
 //SUN GEOMETRY
-const gltfLoader = new GLTFLoader();
-gltfLoader.load( './static/sungltf/scene.gltf', function ( gltf ) {
-  gltf.scene.position.set(1000,10,0);
-  gltf.scene.scale.set(2,2,2);
-	scene.add( gltf.scene );
-
+const sunGeometry = new THREE.SphereGeometry(10,64,64);
+const sunMaterial = new THREE.MeshStandardMaterial({
+  color: 0xcacaca,
+  roughness: 1,
+  metalness: 0.6,
+  emissive: 0xfff227,
 });
+const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.position.set(1000,10,0);
+scene.add(sun);
 
 //RESIZING CANVAS WITH WINDOW
 let sizeWidth, sizeHeight;
